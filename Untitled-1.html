@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Parking Slot Status</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <h1>Real-Time Parking Slot Status</h1>
+    <div id="status-container">
+        <!-- Parking slot statuses will be displayed here -->
+    </div>
+    <p id="error-message" style="color: red;"></p>
+
+    <script>
+        async function fetchParkingData() {
+            try {
+                const response = await fetch('http://localhost:5000/getParkingStatus');
+
+                // Check if the response is OK
+                if (!response.ok) {
+                    throw new Error('Failed to fetch parking status');
+                }
+
+                const data = await response.json();
+
+                // Display the data
+                const statusContainer = document.getElementById('status-container');
+                statusContainer.innerHTML = `
+                    <p>Slot 1: ${data.slot1 ? 'Filled' : 'Empty'}</p>
+                    <p>Slot 2: ${data.slot2 ? 'Filled' : 'Empty'}</p>
+                    <p>Slot 3: ${data.slot3 ? 'Filled' : 'Empty'}</p>
+                    <p>Slot 4: ${data.slot4 ? 'Filled' : 'Empty'}</p>
+                    <p>Slot 5: ${data.slot5 ? 'Filled' : 'Empty'}</p>
+                    <p>Slot 6: ${data.slot6 ? 'Filled' : 'Empty'}</p>
+                    <p>Last Updated: ${data.last_updated}</p>
+                `;
+            } catch (error) {
+                console.error(error);
+                document.getElementById('error-message').textContent = 'Error fetching data. Please check console.';
+            }
+        }
+
+        // Call the fetch function to load the parking status
+        fetchParkingData();
+
+        // Optionally, you can refresh data every few seconds
+        setInterval(fetchParkingData, 5000);  // Refresh every 5 seconds
+    </script>
+</body>
+</html>

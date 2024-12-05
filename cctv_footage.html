@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INNOVKRYPT SOLUTIONS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+    <div class="header-content">
+        <!-- Company Logo -->
+        <img src="image.jpg" alt="Company Logo" class="logo" Style="box-shadow: 0 3px 10px rgba(0, 255, 255, 0.6);">
+        <!-- Company Name and Tagline -->
+        <div class="company-info">
+            <p class="company-name">INNOVKRYPT SOLUTIONS</p>
+            <p class="tag-name">INSPIRE, INNOVATE, IGNITE</p>
+        </div>
+    </div>
+</header>
+<br><br><br>
+<Center>
+<h2><mark style="color: #ffffff; background-color: #00c9cc; padding: 7px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);" ><b>CCTV Monitor<b></mark></h2>
+</Center>
+<br>
+
+<Center>
+	<p class="box" style="text-align: left;"><br>
+		A "CCTV Monitor" is an integral part of a modern parking management system, such as the one implemented by "INNOVKRYPT SOLUTIONS". 
+		It provides real-time video surveillance of parking areas, helping ensure the safety and security of both vehicles and individuals. 
+		By continuously displaying live footage from strategically placed cameras, the CCTV monitor allows parking operators to monitor available slots, identify any suspicious activities, and manage traffic flow efficiently.
+		Integrated with the digital assistance for guiding vehicles to parking spots, the CCTV system enhances the overall functionality and safety of the parking environment, providing a seamless and secure experience for users.
+    <br><br>
+	</p>
+</Center>
+			
+			
+    <!-- Main Content Section -->
+    <main>
+        <section class="video-frame-section">
+            <div class="glass-frame">
+                <div class="video-container">
+                    <video controls>
+                        <source src="car.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </section>
+    </main>
+
+<Center>
+<footer class="footer_1"><br>
+     <section id="contact" class="contact-us">
+        <h2 class="text-3xl font-bold text-center">
+            <mark style="color: #ffffff; background-color: #00c9cc; padding: 8px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);">Contact Us</mark>
+        </h2><br><br>
+        <div class="container mx-auto mt-6">
+            <div class="flex justify-center mt-4">
+                <p class="text-center"><b>Phone :</b> +91 9901663324</p>
+            </div><br>
+            <div class="flex justify-center mt-2">
+                <p class="text-center"><b>Email :</b> innovkryptsolutions@gmail.com</p>
+            </div>
+        </div><br><br>
+    </section>
+</footer>
+</Center>
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 INNOVKRYPT SOLUTIONS. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+
+
+<Style>
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #BCEEF8; /* Light cyan/blue shade */
+}
+
+.header {
+    background-image: url('bgimage.jpg'); /* Path to the background image */
+    background-size: cover; /* Ensures the image covers the entire header */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    height: 200px; /* Adjust the height as per your design */
+    color: white; /* Adjust text color for readability */
+    display: flex; /* Flexbox for alignment */
+    align-items: center; /* Vertical alignment */
+    justify-content: space-between; /* Horizontal alignment */
+    padding: 20px; /* Padding inside the header */
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.header-content {
+    display: flex; /* Align logo and text horizontally */
+    align-items: center; /* Align content vertically */
+}
+
+.logo {
+    width: 100px; /* Adjust logo size */
+    height: auto;
+    margin-right: 20px; /* Add space between logo and text */
+}
+
+.company-name {
+    font-size: 35px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.tag-name {
+    font-size: 18px;
+    margin: 0;
+    font-style: italic;
+    color: #00a99d; /* Adjust color for the tagline */
+}
+
+
+/* Tagline */
+.tag-name {
+    font-size: 18px;
+    margin: 0; /* Remove default margin */
+    color: #ffffff; /* Matching the company's brand color */
+    font-style: italic; /* Make the tagline italic for emphasis */
+}
+
+
+/* Main Section Styles */
+main {
+    padding: 20px;
+}
+
+
+/* Styling the video frame section */
+.video-frame-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh; /* Adjust as needed */
+    background:#C8F8FA; 
+    padding: 40px;
+	border-radius: 10px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass-like frame */
+.glass-frame {
+    position: relative;
+    width: 800px;
+    height: 450px;
+    padding: 5px;
+    background: #8BE4F2; /* Light transparent effect for glass look */
+    border: 2px solid rgba(0, 0, 0, 0.3); /* Slightly transparent border */
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px); /* Glass blur effect */
+    overflow: hidden; /* Keep the content inside */
+	border: 20px solid #12CFED;
+}
+
+/* Container for video */
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    overflow: hidden; /* To keep video inside the frame */
+}
+
+/* Styling the video element */
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the video fits the frame */
+    border-radius: 15px; /* Rounded edges for the video */
+}
+
+/* Optional decorative lines for the modern look */
+.glass-frame::before, .glass-frame::after {
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.6);
+    top: 10px;
+    left: 20px;
+    border-radius: 2px;
+}
+
+.glass-frame::after {
+    width: 60px;
+    height: 3px;
+    bottom: 10px;
+    right: 20px;
+    border-radius: 2px;
+}
+
+
+
+/* Footer Styles */
+footer {
+    background-color: #1FD8F1;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #004d40; /* Dark background color */
+    color: #ffffff; /* White text color */
+    text-align: center; /* Center the text */
+    padding: 20px 0; /* Padding for top and bottom */
+    position: relative; /* Position relative for any potential positioning adjustments */
+    bottom: 0; /* Stick to the bottom if needed */
+    width: 100%; /* Full width */
+}
+
+/* Footer Styles */
+footer_1 {
+    background-color: #02AEC5;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Footer Styles */
+.footer_1 {
+    background-color: #02AEC5; /* Dark background color */
+    color: #ffffff; /* White text color */
+    text-align: center; /* Center the text */
+    padding: 20px 0; /* Padding for top and bottom */
+    position: relative; /* Position relative for any potential positioning adjustments */
+    bottom: 0; /* Stick to the bottom if needed */
+    width: 100%; /* Full width */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.6); /* Shadow for depth */
+}
+
+
+.footer p {
+    margin: 0; /* Remove default margin */
+    font-size: 14px; /* Font size */
+}
+
+.box {
+    border: 4px solid #8C92AC; /* Border color and thickness */
+    padding: 15px; /* Space inside the box */
+	width: 1250px;
+    background-color: #B9FBFF; /* Background color for the box */
+    border-radius: 8px; /* Rounded corners */
+    margin: 10px 0; /* Space above and below the box */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional shadow for depth */
+}
+
+</style>
