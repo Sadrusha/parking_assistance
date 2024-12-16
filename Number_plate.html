@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Details Verification</title>
+    <style>
+        body, html, * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #D3FCFF;
+            color: #333;
+            line-height: 1.6;
+        }
+        .Number_plate {
+            margin: 30px auto;
+            padding: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #fff;
+            width: 500px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+        .Number_plate input, .Number_plate button {
+            padding: 10px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .Number_plate button {
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+        }
+        .Number_plate button:hover {
+            background-color: #555;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        footer {
+            background-color: #1FD8F1;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="Number_plate">
+        <h2><center><b><u>Vehicle Details Verification</u></b></center></h2>
+        <form id="vehicleForm">
+            <label for="number_plate">Vehicle Number:</label>
+            <input type="text" id="number_plate" name="number_plate" placeholder="Enter your vehicle number" required>
+            <button type="submit">GET DATA</button>
+        </form>
+        <div class="result" id="result" style="display:none;"></div>
+    </div>
+    <footer>
+        <p>&copy; 2024 INNOVKRYPT SOLUTIONS. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let vehicleData = [];
+
+        // Load and parse the CSV file
+        fetch("karnataka_vehicle_data.csv")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch the CSV file.");
+                }
+                return response.text();
+            })
+            .then(data => {
+                const rows = data.split('\n');
+                const headers = rows.shift().split(','); // Extract column headers
+                rows.forEach(row => {
+                    const values = row.split(',');
+                    if (values.length === headers.length) {
+                        const entry = {};
+                        headers.forEach((header, index) => {
+                            entry[header.trim()] = values[index].trim();
+                        });
+                        vehicleData.push(entry);
+                    }
+                });
+            })
+            .catch(error => console.error("Error loading CSV:", error));
+
+        // Handle form submission
+        document.getElementById('vehicleForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const numberPlateInput = document.getElementById('number_plate').value.trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '';
+
+            // Search for matching vehicle
+            const vehicle = vehicleData.find(entry => entry['Number Plate'] === numberPlateInput);
+
+            if (vehicle) {
+                resultDiv.innerHTML = `
+                    <p><strong>Number Plate:</strong> ${vehicle['Number Plate']}</p>
+                    <p><strong>Name:</strong> ${vehicle['Name']}</p>
+                    <p><strong>Emission Test Expiry:</strong> ${vehicle['Emission Test Expiry']}</p>
+                    <p><strong>Insurance Expiry:</strong> ${vehicle['Insurance Expiry']}</p>
+                    <p><strong>Mobile Number:</strong> ${vehicle['Mobile Number']}</p>
+                `;
+                resultDiv.style.display = 'block';
+            } else {
+                resultDiv.innerHTML = `<p style="color:red;">Vehicle details not found. Please check the Number Plate.</p>`;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
