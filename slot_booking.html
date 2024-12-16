@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INNOVKRYPT SOLUTIONS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+    <div class="header-content">
+        <!-- Company Logo -->
+        <img src="image.jpg" alt="Company Logo" class="logo" Style="box-shadow: 0 3px 10px rgba(0, 255, 255, 0.6);">
+        <!-- Company Name and Tagline -->
+        <div class="company-info">
+            <p class="company-name">INNOVKRYPT SOLUTIONS</p>
+            <p class="tag-name">INSPIRE, INNOVATE, IGNITE</p>
+        </div>
+    </div>
+</header>
+<!-- Booking Procedure -->
+<div class="booking-form">
+  <h2><center><b><u>Book Your Slot</u></b></center></h2>
+  <form id="bookingForm">
+    <label for="name">Your Name:</label>
+      <input type="text" id="name" name="name" required placeholder="Enter your name">
+    <label for="vehicle">Vehicle Number:</label>
+      <input type="text" id="vehicle" name="vehicle" required placeholder="Enter vehicle number">
+    <label for="slot">Select a Slot:</label>
+    <select id="slot" name="slot" required>
+      <option value="" disabled selected>Select a slot</option>
+      <option value="1">Slot 1</option>
+      <option value="2">Slot 2</option>
+      <option value="3">Slot 3</option>
+      <option value="4">Slot 4</option>
+      <option value="5">Slot 5</option>
+      <option value="6">Slot 6</option>
+    </select>
+      <button type="submit">Book Slot</button>
+  </form>
+</div>
+<br>
+
+
+<!-- JavaScript -->
+<script>
+  const parkingStatusChannelId = '2774490';  // Parking Status Channel ID
+  const parkingStatusReadKey = 'DHCSH0HGBT1EO5MQ';  // Parking Status Read API Key
+  const bookingChannelId = '2787445';     // Booking Channel ID
+  const bookingWriteKey = 'KZWC1SABOW69SYR2';   // Booking Write API Key
+
+  // Check slot status before booking
+  async function getSlotStatus(slot) {
+      const url = `https://api.thingspeak.com/channels/${parkingStatusChannelId}/feeds.json?api_key=${parkingStatusReadKey}&results=1`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const slotFieldKey = `field${slot}`;
+      return data.feeds[0][slotFieldKey];
+  }
+
+  // Handle form submission and booking slot
+  document.getElementById('bookingForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const slot = document.getElementById('slot').value;
+      const name = document.getElementById('name').value;
+      const vehicle = document.getElementById('vehicle').value;
+
+      if (!slot) {
+          alert('Please select a slot before booking!');
+          return;
+      }
+
+      try {
+          const slotStatus = await getSlotStatus(slot);
+          if (slotStatus !== '0') {
+              alert('Slot is not available for booking!');
+              return;
+          }
+
+          const bookingSuccess = await sendBookingData(slot, name, vehicle);
+          if (bookingSuccess) {
+              alert('Slot booked successfully!');
+              await updateSlotStatus(slot, 'orange'); // Mark slot as booked
+              resetForm();
+          } else {
+              alert('Failed to book slot. Please try again.');
+          }
+      } catch (error) {
+          console.error('Error booking slot:', error);
+          alert('An error occurred. Please try again later.');
+      }
+  });
+
+  // Send booking data to ThingSpeak
+  async function sendBookingData(slot, name, vehicle) {
+      const url = 'https://api.thingspeak.com/update.json';
+      const payload = {
+          api_key: bookingWriteKey,
+          field1: slot,       // Slot Number
+          field2: name,       // User Name
+          field3: vehicle     // Vehicle Number
+      };
+
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+      });
+
+      return response.ok;
+  }
+
+  // Update slot status on ThingSpeak after booking
+  async function updateSlotStatus(slot, status) {
+      const url = 'https://api.thingspeak.com/update.json';
+      const payload = {
+          api_key: parkingStatusReadKey,
+          [`field${slot}`]: status // Update the corresponding slot field
+      };
+
+      const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+      });
+
+      return response.ok;
+  }
+
+  // Reset form after booking
+  function resetForm() {
+      document.getElementById('bookingForm').reset();
+  }
+</script>
+<br><br><br>
+<section class="slot-frame">
+<div class="container">
+  <h2><mark style="color: #ffffff; background-color: #00c9cc; padding: 8px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);">Select a Slot</mark></h2><br>
+  <div class="slot-grid">
+    <!-- Parking Slots with Numbers -->
+    <div class="slot empty" id="slot1">
+      <div class="slot-number">Slot 1</div>
+      Empty
+    </div>
+    <div class="slot filled" id="slot2">
+      <div class="slot-number">Slot 2</div>
+      Filled
+    </div>
+    <div class="slot booked" id="slot3">
+      <div class="slot-number">Slot 3</div>
+      Booked
+    </div>
+    <div class="slot filled" id="slot4">
+      <div class="slot-number">Slot 4</div>
+      Filled
+    </div>
+    <div class="slot empty" id="slot5">
+      <div class="slot-number">Slot 5</div>
+      Empty
+    </div>
+    <div class="slot booked" id="slot6">
+      <div class="slot-number">Slot 6</div>
+      Booked
+    </div>
+    <div class="slot empty" id="slot7">
+      <div class="slot-number">Slot 7</div>
+      Empty
+    </div>
+    <div class="slot filled" id="slot8">
+      <div class="slot-number">Slot 8</div>
+      Filled
+    </div>
+    <div class="slot empty" id="slot9">
+      <div class="slot-number">Slot 9</div>
+      Empty
+    </div>
+    <div class="slot booked" id="slot10">
+      <div class="slot-number">Slot 10</div>
+      Booked
+    </div>
+    <div class="slot empty" id="slot11">
+      <div class="slot-number">Slot 11</div>
+      Empty
+    </div>
+    <div class="slot filled" id="slot12">
+      <div class="slot-number">Slot 12</div>
+      Filled
+    </div>
+    <div class="slot booked" id="slot13">
+      <div class="slot-number">Slot 13</div>
+      Booked
+    </div>
+    <div class="slot empty" id="slot14">
+      <div class="slot-number">Slot 14</div>
+      Empty
+    </div>
+    <div class="slot filled" id="slot15">
+      <div class="slot-number">Slot 15</div>
+      Filled
+    </div>
+    <div class="slot empty" id="slot16">
+      <div class="slot-number">Slot 16</div>
+      Empty
+    </div>
+    <div class="slot booked" id="slot17">
+      <div class="slot-number">Slot 17</div>
+      Booked
+    </div>
+    <div class="slot filled" id="slot18">
+      <div class="slot-number">Slot 18</div>
+      Filled
+    </div>
+    <div class="slot empty" id="slot19">
+      <div class="slot-number">Slot 19</div>
+      Empty
+    </div>
+    <div class="slot booked" id="slot20">
+      <div class="slot-number">Slot 20</div>
+      Booked
+    </div>
+    <div class="slot filled" id="slot21">
+      <div class="slot-number">Slot 21</div>
+      Filled
+    </div>
+  </div>
+</div>
+</Section><br><br>
+		
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 INNOVKRYPT SOLUTIONS. All rights reserved.</p>
+    </footer>
+</body>
+</html>
+
+
+
+  <style>  
+/* Basic Reset to avoid interfering with existing styles */
+body, html, * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Body and General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #D3FCFF; /* Light background color for a soft look */
+    color: #333;
+    line-height: 1.6;
+}
+
+.header {
+    background-image: url('bgimage.jpg'); /* Path to the background image */
+    background-size: cover; /* Ensures the image covers the entire header */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    height: 200px; /* Adjust the height as per your design */
+    color: white; /* Adjust text color for readability */
+    display: flex; /* Flexbox for alignment */
+    align-items: center; /* Vertical alignment */
+    justify-content: space-between; /* Horizontal alignment */
+    padding: 20px; /* Padding inside the header */
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.header-content {
+    display: flex; /* Align logo and text horizontally */
+    align-items: center; /* Align content vertically */
+}
+
+.logo {
+    width: 100px; /* Adjust logo size */
+    height: auto;
+    margin-right: 20px; /* Add space between logo and text */
+}
+
+.company-name {
+    font-size: 35px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.tag-name {
+    font-size: 18px;
+    margin: 0;
+    font-style: italic;
+    color: #00a99d; /* Adjust color for the tagline */
+}
+
+
+/* Tagline */
+.tag-name {
+    font-size: 18px;
+    margin: 0; /* Remove default margin */
+    color: #ffffff; /* Matching the company's brand color */
+    font-style: italic; /* Make the tagline italic for emphasis */
+}
+
+
+/* Main Section Styles */
+main {
+    padding: 20px;
+}
+	
+	
+.container {
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center */
+    height: 100vh; /* Full view height to center vertically */
+    flex-direction: column; /* Make the items stacked vertically (optional) */
+    text-align: center;
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 200px);
+    gap: 15px;
+    margin-top: 20px;
+    justify-content: center; /* Center the grid horizontally */
+}
+
+.slot {
+    width: 200px;
+    height: 75px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border: 2px solid #000;
+}
+
+.slot:hover {
+    transform: scale(1.05);
+}
+
+.empty {
+    background-color: #4caf50;
+    color: white;
+}
+
+.filled {
+    background-color: #f44336;
+    color: white;
+}
+
+.booked {
+    background-color: #ff9800;
+    color: white;
+}
+
+.slot-number {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+
+.booking-form {
+    margin: 30px auto; /* Centers the form horizontally */
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background-color: #fff;
+    width: 1000px; /* The defined width */
+    text-align: left; /* Align the text elements to the left (optional) */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);	
+}
+
+    .booking-form input, .booking-form button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .booking-form button {
+      background-color: #333;
+      color: white;
+      cursor: pointer;
+    }
+    .booking-form button:hover {
+      background-color: #555;
+    }
+	
+/* Footer Styles */
+footer {
+    background-color: #1FD8F1;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #004d40; /* Dark background color */
+    color: #ffffff; /* White text color */
+    text-align: center; /* Center the text */
+    padding: 20px 0; /* Padding for top and bottom */
+    position: relative; /* Position relative for any potential positioning adjustments */
+    bottom: 0; /* Stick to the bottom if needed */
+    width: 100%; /* Full width */
+}
+
+.footer p {
+    margin: 0; /* Remove default margin */
+    font-size: 14px; /* Font size */
+}
+	
+
+/* Slot Frame Section with Vintage Border */
+.slot-frame {
+    background-color: #B9FBFF;
+    border-radius: 10px;
+    padding: 40px; /* Adjust padding as needed */
+    max-width: 975px; /* Adjust width as needed */
+    margin: 0 auto; /* Center the frame */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    text-align: center; /* Center the title */
+    position: relative; /* Needed for the pseudo-elements */
+}
+
+.slot-frame::before,
+.slot-frame::after {
+    content: '';
+    position: absolute;
+    border: 10px solid #8C92AC; /* Vintage border color */
+    border-radius: 15px; /* Rounded corners for the border */
+    z-index: -1; /* Place it behind the frame */
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.slot-frame::before {
+    top: -10px; /* Adjust for top border */
+    left: -10px; /* Adjust for left border */
+    right: -10px; /* Adjust for right border */
+    bottom: -10px; /* Adjust for bottom border */
+}
+
+.slot-frame::after {
+    top: -20px; /* Adjust for inner border spacing */
+    left: -20px; /* Adjust for inner border spacing */
+    right: -20px; /* Adjust for inner border spacing */
+    bottom: -20px; /* Adjust for inner border spacing */
+    border: 5px solid #8C92AC; /* Inner border color for a vintage effect */
+    border-radius: 20px; /* More rounded corners */
+	
+  </style>
