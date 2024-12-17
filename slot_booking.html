@@ -53,23 +53,42 @@
 
   // Check slot status before booking (includes retry to avoid stale data)
   async function getSlotStatus(slot) {
-      const url = `https://api.thingspeak.com/channels/${parkingStatusChannelId}/feeds.json?api_key=${parkingStatusReadKey}&results=1`;
+    const url = `https://api.thingspeak.com/channels/${parkingStatusChannelId}/feeds.json?api_key=${parkingStatusReadKey}&results=1`;
 
-      for (let retries = 0; retries < 3; retries++) {
-          const response = await fetch(url);
-          const data = await response.json();
-          const slotFieldKey = `field${slot}`;
+    for (let retries = 0; retries < 3; retries++) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                console.warn(`Retry ${retries + 1}: Failed to fetch slot data.`);
+                await new Promise(resolve => setTimeout(resolve, THINGSPEAK_DELAY));
+                continue;
+            }
 
-          if (data.feeds[0][slotFieldKey]) {
-              return data.feeds[0][slotFieldKey];
-          }
+            const data = await response.json();
+            const slotFieldKey = `field${slot}`;
 
-          // Wait before retrying
-          await new Promise((resolve) => setTimeout(resolve, THINGSPEAK_DELAY));
-      }
+            // Log the retrieved value for debugging
+            console.log(`Slot ${slot} status:`, data.feeds[0][slotFieldKey]);
 
-      return null; // Return null if retries failed
-  }
+            // Return status if valid, else retry
+            if (data.feeds[0] && data.feeds[0][slotFieldKey] !== undefined) {
+                return data.feeds[0][slotFieldKey];
+            } else {
+                console.warn(`Retry ${retries + 1}: Slot data is null or undefined.`);
+            }
+
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, THINGSPEAK_DELAY));
+        } catch (error) {
+            console.error(`Error fetching slot status: ${error.message}`);
+            await new Promise(resolve => setTimeout(resolve, THINGSPEAK_DELAY));
+        }
+    }
+
+    console.error(`Failed to fetch status for slot ${slot} after retries.`);
+    return '0'; // Assume slot is available if all retries fail
+}
+
 
   // Handle form submission and booking slot
   document.getElementById('bookingForm').addEventListener('submit', async function (event) {
