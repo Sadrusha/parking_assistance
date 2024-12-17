@@ -55,7 +55,7 @@
   async function getSlotStatus(slot) {
     const url = `https://api.thingspeak.com/channels/${parkingStatusChannelId}/feeds.json?api_key=${parkingStatusReadKey}&results=1`;
 
-    for (let retries = 0; retries < 3; retries++) {
+    for (let retries = 0; retries < 10; retries++) {
         try {
             const response = await fetch(url);
             if (!response.ok) {
