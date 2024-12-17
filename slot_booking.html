@@ -41,26 +41,38 @@
 </div>
 <br>
 
-
-<!-- JavaScript -->
 <script>
   const parkingStatusChannelId = '2774490';  // Parking Status Channel ID
   const parkingStatusReadKey = 'DHCSH0HGBT1EO5MQ';  // Parking Status Read API Key
-  const bookingChannelId = '2787445';     // Booking Channel ID
-  const bookingWriteKey = 'KZWC1SABOW69SYR2';   // Booking Write API Key
+  const parkingStatusWriteKey = 'BX4TXJ1RM691CEIH';
+  const bookingChannelId = '2787445';  // Booking Channel ID
+  const bookingWriteKey = 'KZWC1SABOW69SYR2';  // Booking Write API Key
 
-  // Check slot status before booking
+  // Delay to allow ThingSpeak to reflect updated data
+  const THINGSPEAK_DELAY = 3000; // 3 seconds
+
+  // Check slot status before booking (includes retry to avoid stale data)
   async function getSlotStatus(slot) {
       const url = `https://api.thingspeak.com/channels/${parkingStatusChannelId}/feeds.json?api_key=${parkingStatusReadKey}&results=1`;
-      const response = await fetch(url);
-      const data = await response.json();
 
-      const slotFieldKey = `field${slot}`;
-      return data.feeds[0][slotFieldKey];
+      for (let retries = 0; retries < 3; retries++) {
+          const response = await fetch(url);
+          const data = await response.json();
+          const slotFieldKey = `field${slot}`;
+
+          if (data.feeds[0][slotFieldKey]) {
+              return data.feeds[0][slotFieldKey];
+          }
+
+          // Wait before retrying
+          await new Promise((resolve) => setTimeout(resolve, THINGSPEAK_DELAY));
+      }
+
+      return null; // Return null if retries failed
   }
 
   // Handle form submission and booking slot
-  document.getElementById('bookingForm').addEventListener('submit', async function(event) {
+  document.getElementById('bookingForm').addEventListener('submit', async function (event) {
       event.preventDefault();
 
       const slot = document.getElementById('slot').value;
@@ -73,16 +85,39 @@
       }
 
       try {
+          // Fetch slot status with retries
           const slotStatus = await getSlotStatus(slot);
+
+          if (slotStatus === null) {
+              alert('Failed to check slot status. Please try again.');
+              return;
+          }
+
           if (slotStatus !== '0') {
               alert('Slot is not available for booking!');
               return;
           }
 
+          // Send booking data to ThingSpeak
           const bookingSuccess = await sendBookingData(slot, name, vehicle);
+
           if (bookingSuccess) {
-              alert('Slot booked successfully!');
-              await updateSlotStatus(slot, 'orange'); // Mark slot as booked
+              alert(`Slot ${slot} booked successfully!`);
+
+              // Update slot status to 'orange'
+              await updateSlotStatus(slot, 'orange');
+
+              // Delay to let ThingSpeak update
+              setTimeout(() => {
+                  fetchParkingData();
+              }, THINGSPEAK_DELAY);
+
+              // Automatically release the slot after 1 minute
+              setTimeout(async () => {
+                  await updateSlotStatus(slot, '0');
+                  console.log(`Slot ${slot} has been released.`);
+              }, 60000); // 1 minute delay
+
               resetForm();
           } else {
               alert('Failed to book slot. Please try again.');
@@ -98,9 +133,9 @@
       const url = 'https://api.thingspeak.com/update.json';
       const payload = {
           api_key: bookingWriteKey,
-          field1: slot,       // Slot Number
-          field2: name,       // User Name
-          field3: vehicle     // Vehicle Number
+          field1: slot,
+          field2: name,
+          field3: vehicle
       };
 
       const response = await fetch(url, {
@@ -112,12 +147,12 @@
       return response.ok;
   }
 
-  // Update slot status on ThingSpeak after booking
+  // Update slot status on ThingSpeak
   async function updateSlotStatus(slot, status) {
       const url = 'https://api.thingspeak.com/update.json';
       const payload = {
-          api_key: parkingStatusReadKey,
-          [`field${slot}`]: status // Update the corresponding slot field
+          api_key: parkingStatusWriteKey,
+          [`field${slot}`]: status
       };
 
       const response = await fetch(url, {
@@ -134,6 +169,8 @@
       document.getElementById('bookingForm').reset();
   }
 </script>
+
+
 <br><br><br>
 <section class="slot-frame">
 <div class="container">
